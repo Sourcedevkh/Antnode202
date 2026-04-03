@@ -1,0 +1,8 @@
+- Request: 
+
+++ Flowworking Middleware
+input data via from(Request) -> json ->  convert javascript -> node(Middleware)
+                                                                            |   
+                                                response <- browser(Client) <- 
+
+- Middleware ជាចំណុចកណ្តាល សម្រាប់ Request and response    

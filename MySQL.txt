@@ -1,0 +1,11 @@
+-Data is one record that store in database
+- One data is store in table
+- Table is have row and column
+
+Mysql is old version 
+Mysql2 is new version is :
+- support with ansy/await
+- Modern dirver is support my computer when select data form database
+
+
+For conect with database needs contectionSting one for into database
