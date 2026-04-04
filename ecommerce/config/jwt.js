@@ -1,6 +1,7 @@
 let jwtConfig = {
     secret: 'mysecretkey',
-    expiresIn: '1d'
+    expiresIn: '2m', 
+    refreshSecret: 'myrefreshsecretkey',
+    refreshExpiresIn: '1d'
 };
-
 module.exports = jwtConfig;

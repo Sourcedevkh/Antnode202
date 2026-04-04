@@ -27,7 +27,9 @@ const login = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Login successful!',
-            user: result
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            user: result.user
         });
     } catch (error) {
         res.status(400).json({
@@ -68,9 +70,33 @@ const logout = async (req, res) =>{
         });
     }
 }
+
+const refresh = async (req, res) =>{
+    try {
+        let refreshToken = req.body.refreshToken;
+        if (!refreshToken) {
+            throw new Error('refreshToken is required');
+        }
+
+        let result = await authService.refresh(refreshToken);
+        res.status(200).json({
+            success: true,
+            message: 'Token refreshed successfully!',
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 module.exports = {
     register,
     login,
     getMe,
-    logout
+    logout,
+    refresh
 }

@@ -8,7 +8,7 @@ const create = async (body) => {
 }
 
 const findById = async (id) => {
-    let [rows] = await pool.query('SELECT id, name, email, phone, address, role, is_active, token FROM users WHERE id = ?', [id]);
+    let [rows] = await pool.query('SELECT id, name, email, phone, address, role, is_active FROM users WHERE id = ?', [id]);
     return rows;
 }
 
@@ -31,11 +31,31 @@ const deleteToken = async (id) =>{
 
 }
 
+const addRefreshToken = async (userId, token, expiresAt) => {
+    await pool.query('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, token, expiresAt]);
+}
+
+const getRefreshToken = async (token) =>{
+    let [row] = await pool.query('SELECT * FROM refresh_tokens WHERE token = ?', [token]);
+    return row;
+}
+
+const deleteRefreshToken = async (token) =>{
+    await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
+}
+
+const deleteRefreshTokensByUserId = async (userId) => {
+    await pool.query('DELETE FROM refresh_tokens WHERE user_id = ?', [userId]);
+}
 module.exports = {
     create,
     findById,
     findByEmail,
     addToken,
     getToken,
-    deleteToken
+    deleteToken,
+    addRefreshToken,
+    getRefreshToken,
+    deleteRefreshToken,
+    deleteRefreshTokensByUserId
 }
