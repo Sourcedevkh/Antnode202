@@ -2,8 +2,8 @@ const pool = require('../config/db');
 
 /* Parameters that will give is object */
 const create = async (body) => {
-    let arrs = [body.name, body.email, body.password];
-    let [result] = await pool.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', arrs);
+    let arrs = [body.name, body.email, body.password, body.verificationToken, body.verificationExpired];
+    let [result] = await pool.query('INSERT INTO users (name, email, password, verification_token, verification_expires) VALUES (?, ?, ?, ?, ?)', arrs);
     return result.insertId;
 }
 

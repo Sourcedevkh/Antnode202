@@ -1,6 +1,6 @@
 let jwtConfig = {
     secret: 'mysecretkey',
-    expiresIn: '2m', 
+    expiresIn: '1d', 
     refreshSecret: 'myrefreshsecretkey',
     refreshExpiresIn: '1d'
 };
