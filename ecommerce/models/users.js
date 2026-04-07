@@ -13,7 +13,7 @@ const findById = async (id) => {
 }
 
 const findByEmail = async (email) => {
-    let [rows] = await pool.query('SELECT id, email, password, phone, address, role, is_active FROM users WHERE email = ?', [email]);
+    let [rows] = await pool.query('SELECT id, email, password, phone, address, role, is_active, is_verified FROM users WHERE email = ?', [email]);
     return rows;
 }
 
@@ -31,22 +31,40 @@ const deleteToken = async (id) =>{
 
 }
 
-const addRefreshToken = async (userId, token, expiresAt) => {
-    await pool.query('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, token, expiresAt]);
+const findByVerificationEmail = async (token) =>{
+    let [rows] = await pool.query('SELECT id, name, email, phone, address, role, is_active, token, is_verified, verification_token, verification_expires FROM users WHERE verification_token = ?', [token]);
+    return rows;
 }
 
-const getRefreshToken = async (token) =>{
-    let [row] = await pool.query('SELECT * FROM refresh_tokens WHERE token = ?', [token]);
-    return row;
+const verifyEmail = async (id) => {
+    await pool.query('UPDATE users SET is_verified = 1 WHERE id = ?', [id]);
 }
 
-const deleteRefreshToken = async (token) =>{
-    await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
+const resendVerificationLink = async (body) => {
+    let arr = [body.verification_token, body.verification_expires, body.id];
+    await pool.query('update users set verification_token = ?, verification_expires = ? where id = ?', arr)
 }
 
-const deleteRefreshTokensByUserId = async (userId) => {
-    await pool.query('DELETE FROM refresh_tokens WHERE user_id = ?', [userId]);
-}
+
+
+
+
+// const addRefreshToken = async (userId, token, expiresAt) => {
+//     await pool.query('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, token, expiresAt]);
+// }
+
+// const getRefreshToken = async (token) =>{
+//     let [row] = await pool.query('SELECT * FROM refresh_tokens WHERE token = ?', [token]);
+//     return row;
+// }
+
+// const deleteRefreshToken = async (token) =>{
+//     await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
+// }
+
+// const deleteRefreshTokensByUserId = async (userId) => {
+//     await pool.query('DELETE FROM refresh_tokens WHERE user_id = ?', [userId]);
+// }
 module.exports = {
     create,
     findById,
@@ -54,8 +72,11 @@ module.exports = {
     addToken,
     getToken,
     deleteToken,
-    addRefreshToken,
-    getRefreshToken,
-    deleteRefreshToken,
-    deleteRefreshTokensByUserId
+    findByVerificationEmail,
+    verifyEmail,
+    resendVerificationLink
+    // addRefreshToken,
+    // getRefreshToken,
+    // deleteRefreshToken,
+    // deleteRefreshTokensByUserId
 }

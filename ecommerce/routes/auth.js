@@ -8,6 +8,8 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/me', isLogin, authController.getMe)
 router.delete('/logout', isLogin, authController.logout);
+router.get('/verify-email', authController.verifyEmail);
+router.post('/resend-verification-link', authController.resendVerificationLink);
 
 router.post('/refresh-token', authController.refresh );
 

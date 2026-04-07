@@ -71,6 +71,38 @@ const logout = async (req, res) =>{
     }
 }
 
+const verifyEmail = async (req, res) =>{
+    try {
+        let result = await authService.verifyEmail(req.query.token);
+        res.status(200).json({
+            success: true,
+            message: result.message
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+const resendVerificationLink = async (req, res) =>{
+    try {
+        console.log(req.body.email);
+        let result = await authService.resendVerificationLink(req.body.email);
+
+        res.status(200).json({
+            success: true,
+            message: result.message
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
 const refresh = async (req, res) =>{
     try {
         let refreshToken = req.body.refreshToken;
@@ -98,5 +130,7 @@ module.exports = {
     login,
     getMe,
     logout,
+    verifyEmail,
+    resendVerificationLink,
     refresh
 }

@@ -27,7 +27,7 @@ const create = async (body) => {
     // Hash the password before saving it
     const hashedPassword = await bcrypt.hash(body.password, 10);
     const verificationToken = crypto.randomBytes(37).toString('hex'); 
-    const verificationExpired = new Date(Date.now() + 60 * 60 * 1000); // Token expires in 60 minutes
+    const verificationExpired = new Date(Date.now() + 5 * 60 * 1000); // Token expires in 60 minutes
     console.log(verificationToken);
 
     let result = await user.create({
@@ -119,6 +119,54 @@ const logout = async (id) =>{
     await user.deleteRefreshTokensByUserId(id);
 }
 
+const verifyEmail = async (token) =>{
+    if(!token){
+        throw new Error('Token is required');
+    }
+    let userInfo = await user.findByVerificationEmail(token);
+    if(userInfo.length == 0){
+        throw new Error('Invalid token');
+    }
+
+    if(userInfo[0].is_verified){
+        throw new Error('Email already verified');
+    }
+    
+    if(!userInfo[0].verification_expires || new Date(userInfo[0].verification_expires) < new Date()){
+        throw new Error('Link verification expired, please register again');
+    }
+
+    await user.verifyEmail(userInfo[0].id);
+    return {message: 'Email verified success.'};    
+}
+
+const resendVerificationLink = async (email) =>{
+    if(!email){
+        throw new Error('Email is required');
+    }
+    let userInfo = await user.findByEmail(email);
+
+    if(userInfo.length == 0){
+        throw new Error('Email not found');
+    }
+
+    if(userInfo[0].is_verified){
+        throw new Error('Email already verified');
+    }
+
+    const verification_token = crypto.randomBytes(37).toString('hex');
+    const verification_expires = new Date(Date.now() + 60 * 60 * 1000); //60min or 1h
+
+    await user.resendVerificationLink({
+        id : userInfo[0].id,
+        verification_token,
+        verification_expires
+    })
+
+    await emailService.sendVerificationEmail(email, verification_token);
+    return {message: 'Resend Success'}
+}
+
 const refresh = async (oldRefreshToken) =>{
 
     if (!oldRefreshToken) {
@@ -166,5 +214,7 @@ module.exports = {
     login,
     getMe,
     logout,
+    verifyEmail,
+    resendVerificationLink,
     refresh
 }
